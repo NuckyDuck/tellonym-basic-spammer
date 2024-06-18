@@ -3,7 +3,6 @@ import json
 import time
 import random
 
-# Datos del host y la URL
 host = "api.tellonym.me"
 url = "/tells/new"
 mensajes = 0
@@ -22,7 +21,6 @@ user_agents = [
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36"
 ]
 
-# Lista de mensajes
 dic_msg = [
     "PERROS HPTAS!",
     "¿SE SALVARON? JAJAJ",
@@ -35,12 +33,9 @@ dic_msg = [
     "HPTAS RANAS"
 ]
 
-
 while True:
-    # Seleccionar un mensaje aleatorio de la lista
     diccionario = random.choice(dic_msg)
 
-    # Crear el payload con el mensaje seleccionado
     payload = json.dumps({
         "isInstagramInAppBrowser": False,
         "isSnapchatInAppBrowser": False,
@@ -54,49 +49,49 @@ while True:
     })
     user_agent = random.choice(user_agents)
 
-
     headers = {
-    "Accept": "application/json",
-    "Accept-Encoding": "gzip, deflate, br, zstd",
-    "Accept-Language": "es-ES,es;q=0.7",
-    "Content-Type": "application/json;charset=utf-8",
-    "Origin": "https://tellonym.me",
-    "Referer": "https://tellonym.me/",
-    'Sec-Ch-Ua': random.choice(['"Microsoft Edge";v="123"', '"Not:A-Brand";v="8"', '"Chromium";v="123"']),
-    'Sec-Ch-Ua-Mobile': random.choice(['?0', '?1']),
-    'Sec-Ch-Ua-Platform': random.choice(['"Windows"', '"Linux"', '"Macintosh"', '"Android"', '"iOS"']),
-    "Sec-Fetch-Dest": "empty",
-    "Sec-Fetch-Mode": "cors",
-    "Sec-Fetch-Site": "same-site",
-    "Sec-Gpc": "1",
-    "Tellonym-Client": "web:3.108.0",
-    'User-Agent': user_agent
-}
-    
+        "Accept": "application/json",
+        "Accept-Encoding": "gzip, deflate, br, zstd",
+        "Accept-Language": "es-ES,es;q=0.7",
+        "Content-Type": "application/json;charset=utf-8",
+        "Origin": "https://tellonym.me",
+        "Referer": "https://tellonym.me/",
+        'Sec-Ch-Ua': random.choice(['"Microsoft Edge";v="123"', '"Not:A-Brand";v="8"', '"Chromium";v="123"']),
+        'Sec-Ch-Ua-Mobile': random.choice(['?0', '?1']),
+        'Sec-Ch-Ua-Platform': random.choice(['"Windows"', '"Linux"', '"Macintosh"', '"Android"', '"iOS"']),
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "same-site",
+        "Sec-Gpc": "1",
+        "Tellonym-Client": "web:3.108.0",
+        'User-Agent': user_agent
+    }
+
     try:
-        # Configurar la conexión HTTP
         conn = http.client.HTTPSConnection(host)
         conn.request("POST", url, body=payload, headers=headers)
 
-        # Obtener la respuesta
         response = conn.getresponse()
         data = response.read()
 
         if response.status == 200:
             mensajes += 1
-            print(f"[+] Mensaje enviado. Total mensajes enviados: {mensajes} - {diccionario}")
-            time.sleep(3)
+            print(f"[+] Mensaje enviado. Total mensajes enviados: {mensajes} - {diccionario} - {user_agent}")
+            time.sleep(5)
         elif response.status == 429:
             retries += 1
-            print(f"[!] Límite de peticiones excedido. Esperando 15 segundos...")
-            time.sleep(15)
+            print(f"[!] Límite de peticiones excedido. Esperando 20 segundos...")
+            time.sleep(20)
         else:
             print(f"[!] Error: Estado de respuesta: {response.status}, Mensaje: {data.decode('utf-8')}")
-        
+
         conn.close()
     except Exception as e:
         print(f"[!] Error de conexión: {e}")
-    
 
-    
-    time.sleep(1)  # Espera 1 segundo antes de enviar el próximo mensaje
+    if mensajes >= 50:
+        print("[!] Alcanzado el límite de 50 mensajes. Esperando 5 minutos antes de continuar...")
+        time.sleep(300)
+        retries = 0
+
+    time.sleep(1)
